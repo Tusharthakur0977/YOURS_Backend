@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// User model representing registered users
+model User {
+  id                  String             @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  email               String             @unique
+  password            String
+  profilePic          String?
+  securityQuestion    SecurityQuestion?  @relation(fields: [securityQuestionId], references: [id])
+  securityQuestionId  String?            @unique @db.ObjectId
+  answers             Answers[]
+  forgotPasswordOTP   ForgotPasswordOTP? @relation(fields: [forgotPasswordOTPId], references: [id])
+  forgotPasswordOTPId String?            @db.ObjectId
+}
+
+// SecurityQuestion model for storing security questions
+model SecurityQuestion {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  question String @unique // Ensure questions are unique
+  answer   String // Store the answer to the security question
+  user     User? // Establishes a reverse one-to-one relationship with the User model
+}
+
+// PasswordResetToken model for password reset functionality
+model PasswordResetToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String // Reference to the user ID
+  token     String   @unique // Ensure tokens are unique
+  createdAt DateTime @default(now()) // Timestamp of token creation
+}
+
+// ForgotPasswordOTP model for storing forgot password OTPs
+model ForgotPasswordOTP {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique // Reference to the user ID, ensure only one OTP per user
+  otp       Int      @unique // One-time password
+  createdAt DateTime @default(now()) // Timestamp of OTP creation
+  User      User[]
+}
+
+// Answers model for storing user answers to daily questions
+model Answers {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId // Reference to the user ID
+  questionId   String // Reference to the question ID
+  answer       String
+  answeredDate DateTime @default(now()) // Timestamp of answer submission
+  User         User     @relation(fields: [userId], references: [id])
+}
+
+// Question model for storing daily questions
+model Question {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  text      String
+  dayOfWeek DayOFWeek // Store the day of the week as string (e.g., "Monday")
+}
+
+enum DayOFWeek {
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+  sunday
+}
