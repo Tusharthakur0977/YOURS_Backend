@@ -25,6 +25,7 @@ model User {
   answers             Answers[]
   forgotPasswordOTP   ForgotPasswordOTP? @relation(fields: [forgotPasswordOTPId], references: [id])
   forgotPasswordOTPId String?            @db.ObjectId
+  sobriety            String
 }
 
 // SecurityQuestion model for storing security questions

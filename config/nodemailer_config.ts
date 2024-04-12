@@ -25,7 +25,5 @@ export const sendEmail = async (
   // Send the email and return a Promise that resolves to the sent email object
   const emailSent = await transporter.sendMail(mailOptions);
 
-  console.log(emailSent);
-  
   return emailSent;
 };

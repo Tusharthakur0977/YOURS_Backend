@@ -20,8 +20,8 @@ const CreateUser = async (req: Request, res: Response) => {
     const [fields, files] = await form.parse(req);
     const body = convertedFormData(fields);
 
-    const { email, name, password } = body;
-
+    const { email, name, password, sobrietyDate } = body;
+    
     // // Input validation
     if (!name) {
       return sendResponse(res, STATUS_CODES.BAD_REQUEST, {
@@ -60,19 +60,20 @@ const CreateUser = async (req: Request, res: Response) => {
     const hashedPassword = hashPassword(password);
 
     const profilePic = await singleFileUpload(files.profileImage![0], firebase);
-
     const newUser = await prisma.user.create({
       data: {
         name: name,
         email: email,
         password: hashedPassword,
         profilePic: profilePic,
+        sobriety: sobrietyDate,
       },
       select: {
         id: true,
         name: true,
         email: true,
         profilePic: true,
+        sobriety: true,
       },
     });
 
