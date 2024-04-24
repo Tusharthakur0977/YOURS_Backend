@@ -38,8 +38,13 @@ export const authenticateToken = async (
     }
 
     // sending user data find by user id to next function
-    req.body = { user: user, body: req.body };
-
+    req.body = {
+      user,
+      params: req.params,
+      headers: req.headers,
+      query: req.query,
+      body: req.body,
+    };
     next();
   } catch (error) {
     return sendResponse(res, STATUS_CODES.UNAUTHORIZED, {

@@ -11,6 +11,7 @@ import {
   sendResponse,
   singleFileUpload,
 } from '../../utils/helpers';
+import { defaultJournalQuestions } from '../../seeds/JournalQuestions';
 
 const form = formidable({});
 const firebase = initializeApp(firebase_config.firebaseConfig);
@@ -21,7 +22,7 @@ const CreateUser = async (req: Request, res: Response) => {
     const body = convertedFormData(fields);
 
     const { email, name, password, sobrietyDate } = body;
-    
+
     // // Input validation
     if (!name) {
       return sendResponse(res, STATUS_CODES.BAD_REQUEST, {
@@ -67,6 +68,17 @@ const CreateUser = async (req: Request, res: Response) => {
         password: hashedPassword,
         profilePic: profilePic,
         sobriety: sobrietyDate,
+        journals: {
+          create: {
+            journalDate: new Date(), // Adjust this as needed
+            isAnswered: false,
+            questions: {
+              createMany: {
+                data: defaultJournalQuestions,
+              },
+            },
+          },
+        },
       },
       select: {
         id: true,

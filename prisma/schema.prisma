@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -22,10 +19,10 @@ model User {
   profilePic          String?
   securityQuestion    SecurityQuestion?  @relation(fields: [securityQuestionId], references: [id])
   securityQuestionId  String?            @unique @db.ObjectId
-  answers             Answers[]
   forgotPasswordOTP   ForgotPasswordOTP? @relation(fields: [forgotPasswordOTPId], references: [id])
   forgotPasswordOTPId String?            @db.ObjectId
   sobriety            String
+  journals            Journal[]
 }
 
 // SecurityQuestion model for storing security questions
@@ -53,21 +50,25 @@ model ForgotPasswordOTP {
   User      User[]
 }
 
-// Answers model for storing user answers to daily questions
-model Answers {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String   @db.ObjectId // Reference to the user ID
-  questionId   String // Reference to the question ID
-  answer       String
-  answeredDate DateTime @default(now()) // Timestamp of answer submission
-  User         User     @relation(fields: [userId], references: [id])
+// Journal model for storing daily journals
+model Journal {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String     @db.ObjectId // Reference to the user ID
+  journalDate DateTime // Date of the journal entry
+  questions   Question[] // Establishes a one-to-many relationship with the Question model
+  isAnswered  Boolean
+  User        User       @relation(fields: [userId], references: [id])
 }
 
 // Question model for storing daily questions
 model Question {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  text      String
-  dayOfWeek DayOFWeek // Store the day of the week as string (e.g., "Monday")
+  id             String  @id @default(auto()) @map("_id") @db.ObjectId
+  journalId      String  @db.ObjectId // Reference to the journal ID
+  questionText   String
+  answer String?
+  isAnswered     Boolean @default(false)
+  questionType   String
+  journal        Journal @relation(fields: [journalId], references: [id])
 }
 
 enum DayOFWeek {

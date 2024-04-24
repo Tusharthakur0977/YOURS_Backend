@@ -93,9 +93,9 @@ export const UpdateProfileName = async (req: Request, res: Response) => {
         message: 'User name updated successfully',
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Create User Error: ', error); // Improved error logging
-    sendResponse(res, STATUS_CODES.INTERNAL_SERVER_ERROR, {
+    sendResponse(error, STATUS_CODES.INTERNAL_SERVER_ERROR, {
       error: 'Internal server error',
     });
   }

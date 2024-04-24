@@ -10,6 +10,7 @@ import ForgotPassword from '../controllers/User/ForgotPassword';
 import VerifyOtp from '../controllers/User/VerifyOtp';
 import ChangePassword from '../controllers/User/ChangePassword';
 import ResetPassword from '../controllers/User/ResetPassword';
+import UserDetails from '../controllers/User/UserDetails';
 
 const router = express.Router();
 
@@ -28,5 +29,7 @@ router.post('/resetPassword', ResetPassword);
 // Route for update profile picture and Name
 router.post('/updateProfileImage', authenticateToken, UpdateProfileImage);
 router.post('/updateProfileName', authenticateToken, UpdateProfileName);
+
+router.get('/details', authenticateToken, UserDetails);
 
 export default router;
